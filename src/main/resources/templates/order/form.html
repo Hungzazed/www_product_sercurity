@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin hóa đơn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Product Shop</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products">Sản phẩm</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories">Danh mục</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customers">Khách hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/orders">Hóa đơn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 th:text="${order.id != null ? 'Cập nhật hóa đơn' : 'Tạo hóa đơn mới'}"></h2>
+
+        <form th:action="@{/orders/save}" th:object="${order}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="mb-3">
+                <label for="customerId" class="form-label">Khách hàng:</label>
+                <select class="form-select" id="customerId" name="customerId" required>
+                    <option value="">-- Chọn khách hàng --</option>
+                    <option th:each="cust : ${customers}"
+                            th:value="${cust.id}"
+                            th:text="${cust.name}"
+                            th:selected="${order.customer != null && cust.id == order.customer.id}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="date" class="form-label">Ngày đặt hàng:</label>
+                <input type="date" class="form-control" id="date"
+                       th:value="${order.date != null ? #calendars.format(order.date, 'yyyy-MM-dd') : ''}"
+                       name="date" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a href="/orders" class="btn btn-secondary">Hủy</a>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

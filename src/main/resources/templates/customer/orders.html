@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng của khách hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Product Shop</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products">Sản phẩm</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories">Danh mục</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/customers">Khách hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders">Hóa đơn</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Đơn hàng của khách hàng: <span th:text="${customer.name}"></span></h2>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Thông tin khách hàng</h5>
+                <p class="card-text">
+                    <strong>Tên:</strong> <span th:text="${customer.name}"></span><br>
+                    <strong>Ngày tham gia:</strong> <span th:text="${#calendars.format(customer.customerSince, 'dd/MM/yyyy')}"></span><br>
+                    <strong>Tổng số đơn hàng:</strong> <span th:text="${customer.orders.size()}"></span>
+                </p>
+            </div>
+        </div>
+
+        <h4>Danh sách đơn hàng</h4>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Mã đơn hàng</th>
+                    <th>Ngày đặt</th>
+                    <th>Số sản phẩm</th>
+                    <th>Tổng tiền</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${customer.orders}">
+                    <td th:text="${order.id}"></td>
+                    <td th:text="${#calendars.format(order.date, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${order.orderLines.size()}"></td>
+                    <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' VNĐ'"></td>
+                    <td>
+                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-info btn-sm">Xem chi tiết</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(customer.orders)}">
+                    <td colspan="5" class="text-center">Khách hàng chưa có đơn hàng nào</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="/customers" class="btn btn-secondary">Quay lại</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
