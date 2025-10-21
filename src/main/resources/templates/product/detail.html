@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết sản phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -14,18 +15,41 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link active" href="/products">Sản phẩm</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/categories">Danh mục</a>
+                        <a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/categories">Danh mục</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customers">Khách hàng</a>
+                        <a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/customers">Khách hàng</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/orders">Hóa đơn</a>
+                        <a sec:authorize="hasAnyRole('ADMIN', 'CUSTOMER')" class="nav-link" href="/orders">Hóa đơn</a>
+                    </li>
+                    <li class="nav-item">
+                        <a sec:authorize="hasAnyRole('ADMIN', 'CUSTOMER')" class="nav-link" href="/cart">
+                            <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <!-- Nếu đã đăng nhập -->
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <span class="navbar-text text-white me-2">
+                        Xin chào, <span sec:authentication="name"></span>
+                    </span>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
+                        </form>
+                    </li>
+
+                    <!-- Nếu chưa đăng nhập -->
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a th:href="@{/login}" class="btn btn-outline-light btn-sm">Đăng nhập</a>
                     </li>
                 </ul>
             </div>
@@ -34,6 +58,17 @@
 
     <div class="container mt-4">
         <h2>Chi tiết sản phẩm</h2>
+        
+        <!-- Thông báo -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
 
         <div class="card">
             <div class="card-body">
@@ -46,8 +81,28 @@
                     <span th:if="${product.inStock}" class="badge bg-success">Còn hàng</span>
                     <span th:unless="${product.inStock}" class="badge bg-danger">Hết hàng</span>
                 </p>
-                <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-warning">Sửa</a>
-                <a href="/products" class="btn btn-secondary">Quay lại</a>
+                
+                <!-- Nút mua hàng cho CUSTOMER và ADMIN -->
+                <div th:if="${product.inStock}">
+                    <form sec:authorize="hasAnyRole('CUSTOMER', 'ADMIN')" 
+                          th:action="@{/cart/add/{id}(id=${product.id})}" 
+                          method="post" 
+                          class="mb-3"
+                          style="display:inline-block;">
+                        <div class="input-group" style="max-width: 300px; display:inline-flex;">
+                            <span class="input-group-text">Số lượng:</span>
+                            <input type="number" name="quantity" value="1" min="1" max="100" class="form-control" style="width: 80px;">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="mt-3">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-warning">Sửa</a>
+                    <a href="/products" class="btn btn-secondary">Quay lại</a>
+                </div>
             </div>
         </div>
 

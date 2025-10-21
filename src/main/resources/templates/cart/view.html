@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Product Shop</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/products">Sản phẩm</a></li>
+                <li class="nav-item"><a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/categories">Danh mục</a></li>
+                <li class="nav-item"><a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/customers">Khách hàng</a></li>
+                <li class="nav-item"><a sec:authorize="hasAnyRole('ADMIN', 'CUSTOMER')" class="nav-link" href="/orders">Hóa đơn</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/cart">Giỏ hàng</a></li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <span class="navbar-text text-white me-2">
+                        Xin chào, <span sec:authentication="name"></span>
+                    </span>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
+                    </form>
+                </li>
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a th:href="@{/login}" class="btn btn-outline-light btn-sm">Đăng nhập</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h3 class="mb-3">Giỏ hàng của bạn</h3>
+
+    <!-- Thông báo -->
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <!-- Nếu giỏ hàng trống -->
+    <div th:if="${#lists.isEmpty(cartItems)}" class="text-center p-4 border rounded">
+        <p class="mb-3">Giỏ hàng của bạn đang trống.</p>
+        <a href="/products" class="btn btn-primary">Tiếp tục mua sắm</a>
+    </div>
+
+    <!-- Nếu có sản phẩm -->
+    <div th:unless="${#lists.isEmpty(cartItems)}">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+            <tr>
+                <th class="text-center" style="width: 60px;">#</th>
+                <th>Sản phẩm</th>
+                <th class="text-end">Giá</th>
+                <th class="text-center" style="width: 120px;">Số lượng</th>
+                <th class="text-end">Tổng</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, iterStat : ${cartItems}">
+                <td class="text-center" th:text="${iterStat.count}"></td>
+                <td>
+                    <strong th:text="${item.productName}"></strong><br>
+                    <small class="text-muted">Mã: <span th:text="${item.productId}"></span></small>
+                </td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')} + ' VNĐ'"></td>
+                <td class="text-center" th:text="${item.quantity}"></td>
+                <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(item.subTotal, 0, 'COMMA', 2, 'POINT')} + ' VNĐ'"></td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                <td class="text-end fw-bold text-danger"
+                    th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 2, 'POINT')} + ' VNĐ'"></td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="/products" class="btn btn-secondary">← Tiếp tục mua sắm</a>
+            <form th:action="@{/cart/checkout}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-success"
+                        onclick="return confirm('Bạn có chắc chắn muốn thanh toán và tạo đơn hàng?')">
+                    Thanh toán
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

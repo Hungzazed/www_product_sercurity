@@ -113,7 +113,7 @@ public class DataInitializer implements CommandLineRunner {
         Customer customer3 = new Customer();
         customer3.setName("Lê Văn C");
         customer3.setPassword("123");
-        customer3.setRoles(List.of(ROLE.ROLE_GUEST));
+        customer3.setRoles(List.of(ROLE.ROLE_CUSTOMER));
         Calendar cal3 = Calendar.getInstance();
         cal3.set(2024, Calendar.JUNE, 10);
         customer3.setCustomerSince(cal3);

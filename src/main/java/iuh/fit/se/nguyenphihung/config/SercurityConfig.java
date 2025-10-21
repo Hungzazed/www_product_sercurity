@@ -10,18 +10,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SercurityConfig {
     private final CustomerService customerService;
@@ -49,15 +46,16 @@ public class SercurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/test").permitAll()
-                        .requestMatchers("/products", "/products/detail/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .requestMatchers("/categories", "/products/detail/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .requestMatchers("/customers", "/products/detail/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .requestMatchers("/orders", "/products/detail/**").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/test").permitAll()
+                        .requestMatchers("/", "/products", "/products/detail/**").permitAll()
+                        .requestMatchers("/categories", "/categories/detail/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/customers", "/customers/detail/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/orders", "/orders/detail/**").hasAnyRole("CUSTOMER", "ADMIN")
                         .requestMatchers("/products/new", "/products/edit/", "/products/save/").hasRole("ADMIN")
                         .requestMatchers("/categories/new", "/categories/edit/", "/categories/save/").hasRole("ADMIN")
                         .requestMatchers("/customers/new", "/customers/edit/", "/customers/save/").hasRole("ADMIN")
                         .requestMatchers("/orders/new", "/orders/edit/", "/orders/save/").hasRole("ADMIN")
+                        .requestMatchers("/cart/**").hasAnyRole("CUSTOMER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -66,7 +64,7 @@ public class SercurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
+                        .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()

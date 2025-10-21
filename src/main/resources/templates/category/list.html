@@ -19,13 +19,31 @@
                         <a class="nav-link" href="/products">Sản phẩm</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/categories">Danh mục</a>
+                        <a sec:authorize="hasRole('ADMIN')" class="nav-link active" href="/categories">Danh mục</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/customers">Khách hàng</a>
+                        <a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/customers">Khách hàng</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/orders">Hóa đơn</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <!-- Nếu đã đăng nhập -->
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <span class="navbar-text text-white me-2">
+                        Xin chào, <span sec:authentication="name"></span>
+                    </span>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
+                        </form>
+                    </li>
+
+                    <!-- Nếu chưa đăng nhập -->
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a th:href="@{/login}" class="btn btn-outline-light btn-sm">Đăng nhập</a>
                     </li>
                 </ul>
             </div>
