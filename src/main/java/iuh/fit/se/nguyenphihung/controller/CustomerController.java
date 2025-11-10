@@ -2,10 +2,12 @@ package iuh.fit.se.nguyenphihung.controller;
 
 import iuh.fit.se.nguyenphihung.entities.Customer;
 import iuh.fit.se.nguyenphihung.service.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +49,12 @@ public class CustomerController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save")
-    public String saveCustomer(@ModelAttribute Customer customer) {
+    public String saveCustomer(@Valid @ModelAttribute Customer customer, 
+                              BindingResult result,
+                              Model model) {
+        if (result.hasErrors()) {
+            return "customer/form";
+        }
         customerService.save(customer);
         return "redirect:/customers";
     }

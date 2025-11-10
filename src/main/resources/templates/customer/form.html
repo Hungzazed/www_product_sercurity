@@ -35,19 +35,40 @@
     <div class="container mt-4">
         <h2 th:text="${customer.id != null ? 'Cập nhật khách hàng' : 'Thêm khách hàng mới'}"></h2>
 
-        <form th:action="@{/customers/save}" th:object="${customer}" method="post">
+        <form th:action="@{/customers/save}" th:object="${customer}" method="post" novalidate>
             <input type="hidden" th:field="*{id}">
 
             <div class="mb-3">
-                <label for="name" class="form-label">Tên khách hàng:</label>
-                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                <label for="name" class="form-label">Tên khách hàng: <span class="text-danger">*</span></label>
+                <input type="text" 
+                       class="form-control" 
+                       id="name" 
+                       th:field="*{name}" 
+                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                       placeholder="Nhập tên khách hàng (3-50 ký tự)">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
 
             <div class="mb-3">
-                <label for="customerSince" class="form-label">Ngày tham gia:</label>
-                <input type="date" class="form-control" id="customerSince"
+                <label for="password" class="form-label">Mật khẩu: <span class="text-danger">*</span></label>
+                <input type="password" 
+                       class="form-control" 
+                       id="password" 
+                       th:field="*{password}"
+                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                       placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="customerSince" class="form-label">Ngày tham gia: <span class="text-danger">*</span></label>
+                <input type="date" 
+                       class="form-control" 
+                       id="customerSince"
                        th:value="${customer.customerSince != null ? #calendars.format(customer.customerSince, 'yyyy-MM-dd') : ''}"
-                       name="customerSince" required>
+                       name="customerSince"
+                       th:classappend="${#fields.hasErrors('customerSince')} ? 'is-invalid' : ''">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('customerSince')}" th:errors="*{customerSince}"></div>
             </div>
 
             <button type="submit" class="btn btn-primary">Lưu</button>

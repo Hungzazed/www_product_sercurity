@@ -35,25 +35,33 @@
     <div class="container mt-4">
         <h2 th:text="${order.id != null ? 'Cập nhật hóa đơn' : 'Tạo hóa đơn mới'}"></h2>
 
-        <form th:action="@{/orders/save}" th:object="${order}" method="post">
+        <form th:action="@{/orders/save}" th:object="${order}" method="post" novalidate>
             <input type="hidden" th:field="*{id}">
 
             <div class="mb-3">
-                <label for="customerId" class="form-label">Khách hàng:</label>
-                <select class="form-select" id="customerId" name="customerId" required>
+                <label for="customerId" class="form-label">Khách hàng: <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        id="customerId" 
+                        name="customerId"
+                        th:classappend="${#fields.hasErrors('customer')} ? 'is-invalid' : ''">
                     <option value="">-- Chọn khách hàng --</option>
                     <option th:each="cust : ${customers}"
                             th:value="${cust.id}"
                             th:text="${cust.name}"
                             th:selected="${order.customer != null && cust.id == order.customer.id}"></option>
                 </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('customer')}" th:errors="*{customer}"></div>
             </div>
 
             <div class="mb-3">
-                <label for="date" class="form-label">Ngày đặt hàng:</label>
-                <input type="date" class="form-control" id="date"
+                <label for="date" class="form-label">Ngày đặt hàng: <span class="text-danger">*</span></label>
+                <input type="date" 
+                       class="form-control" 
+                       id="date"
                        th:value="${order.date != null ? #calendars.format(order.date, 'yyyy-MM-dd') : ''}"
-                       name="date" required>
+                       name="date"
+                       th:classappend="${#fields.hasErrors('date')} ? 'is-invalid' : ''">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
             </div>
 
             <button type="submit" class="btn btn-primary">Lưu</button>

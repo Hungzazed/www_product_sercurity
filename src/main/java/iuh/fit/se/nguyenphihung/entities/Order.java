@@ -1,6 +1,7 @@
 package iuh.fit.se.nguyenphihung.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,11 +22,14 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull(message = "Ngày đặt hàng không được để trống")
+    @PastOrPresent(message = "Ngày đặt hàng không thể là ngày tương lai")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
     private Calendar date;
 
+    @NotNull(message = "Đơn hàng phải có khách hàng")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;

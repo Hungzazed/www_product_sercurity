@@ -35,34 +35,49 @@
     <div class="container mt-4">
         <h2 th:text="${orderLine.id != null ? 'Cập nhật chi tiết hóa đơn' : 'Thêm sản phẩm vào hóa đơn'}"></h2>
 
-        <form th:action="@{/orderlines/save}" th:object="${orderLine}" method="post">
+        <form th:action="@{/orderlines/save}" th:object="${orderLine}" method="post" novalidate>
             <input type="hidden" th:field="*{id}">
 
             <div class="mb-3">
-                <label for="orderId" class="form-label">Hóa đơn:</label>
-                <select class="form-select" id="orderId" name="orderId" required>
+                <label for="orderId" class="form-label">Hóa đơn: <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        id="orderId" 
+                        name="orderId"
+                        th:classappend="${#fields.hasErrors('order')} ? 'is-invalid' : ''">
                     <option value="">-- Chọn hóa đơn --</option>
                     <option th:each="ord : ${orders}"
                             th:value="${ord.id}"
                             th:text="'HĐ #' + ${ord.id} + ' - ' + ${ord.customer.name} + ' - ' + ${#calendars.format(ord.date, 'dd/MM/yyyy')}"
                             th:selected="${orderLine.order != null && ord.id == orderLine.order.id}"></option>
                 </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('order')}" th:errors="*{order}"></div>
             </div>
 
             <div class="mb-3">
-                <label for="productId" class="form-label">Sản phẩm:</label>
-                <select class="form-select" id="productId" name="productId" required>
+                <label for="productId" class="form-label">Sản phẩm: <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        id="productId" 
+                        name="productId"
+                        th:classappend="${#fields.hasErrors('product')} ? 'is-invalid' : ''">
                     <option value="">-- Chọn sản phẩm --</option>
                     <option th:each="prod : ${products}"
                             th:value="${prod.id}"
                             th:text="${prod.name} + ' - ' + ${#numbers.formatDecimal(prod.price, 0, 'COMMA', 2, 'POINT')} + ' VNĐ'"
                             th:selected="${orderLine.product != null && prod.id == orderLine.product.id}"></option>
                 </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('product')}" th:errors="*{product}"></div>
             </div>
 
             <div class="mb-3">
-                <label for="amount" class="form-label">Số lượng:</label>
-                <input type="number" class="form-control" id="amount" th:field="*{amount}" min="1" required>
+                <label for="amount" class="form-label">Số lượng: <span class="text-danger">*</span></label>
+                <input type="number" 
+                       class="form-control" 
+                       id="amount" 
+                       th:field="*{amount}" 
+                       min="1"
+                       placeholder="Nhập số lượng (1-10000)"
+                       th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid' : ''">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
             </div>
 
             <button type="submit" class="btn btn-primary">Lưu</button>

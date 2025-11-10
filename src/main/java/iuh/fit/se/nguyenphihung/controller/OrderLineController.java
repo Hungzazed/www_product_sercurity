@@ -6,9 +6,11 @@ import iuh.fit.se.nguyenphihung.entities.Product;
 import iuh.fit.se.nguyenphihung.service.OrderLineService;
 import iuh.fit.se.nguyenphihung.service.OrderService;
 import iuh.fit.se.nguyenphihung.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -54,9 +56,17 @@ public class OrderLineController {
     }
 
     @PostMapping("/save")
-    public String saveOrderLine(@ModelAttribute OrderLine orderLine,
+    public String saveOrderLine(@Valid @ModelAttribute OrderLine orderLine,
+                                BindingResult result,
                                 @RequestParam Integer orderId,
-                                @RequestParam Integer productId) {
+                                @RequestParam Integer productId,
+                                Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("orders", orderService.findAll());
+            model.addAttribute("products", productService.findAll());
+            return "orderline/form";
+        }
+        
         Order order = orderService.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order Id:" + orderId));
         Product product = productService.findById(productId)

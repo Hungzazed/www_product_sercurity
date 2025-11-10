@@ -5,11 +5,13 @@ import iuh.fit.se.nguyenphihung.entities.Order;
 import iuh.fit.se.nguyenphihung.service.CustomerService;
 import iuh.fit.se.nguyenphihung.service.OrderLineService;
 import iuh.fit.se.nguyenphihung.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,7 +71,14 @@ public class OrderController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save")
-    public String saveOrder(@ModelAttribute Order order, @RequestParam Integer customerId) {
+    public String saveOrder(@Valid @ModelAttribute Order order, 
+                           BindingResult result,
+                           @RequestParam Integer customerId,
+                           Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("customers", customerService.findAll());
+            return "order/form";
+        }
         Customer customer = customerService.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid customer Id:" + customerId));
         order.setCustomer(customer);
