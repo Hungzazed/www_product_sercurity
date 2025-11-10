@@ -4,6 +4,7 @@ import iuh.fit.se.nguyenphihung.entities.*;
 import iuh.fit.se.nguyenphihung.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -93,8 +94,8 @@ public class DataInitializer implements CommandLineRunner {
 
         // Tạo khách hàng
         Customer customer1 = new Customer();
-        customer1.setName("Nguyễn Văn A");
-        customer1.setPassword("123");
+        customer1.setName("customer");
+        customer1.setPassword(new BCryptPasswordEncoder().encode("123"));
         customer1.setRoles(List.of(ROLE.ROLE_CUSTOMER));
         Calendar cal1 = Calendar.getInstance();
         cal1.set(2023, Calendar.JANUARY, 15);
@@ -102,8 +103,8 @@ public class DataInitializer implements CommandLineRunner {
         customerRepository.save(customer1);
 
         Customer customer2 = new Customer();
-        customer2.setName("Trần Thị B");
-        customer2.setPassword("123");
+        customer2.setName("admin");
+        customer2.setPassword(new BCryptPasswordEncoder().encode("123"));
         customer2.setRoles(List.of(ROLE.ROLE_ADMIN));
         Calendar cal2 = Calendar.getInstance();
         cal2.set(2023, Calendar.MARCH, 20);
@@ -112,7 +113,7 @@ public class DataInitializer implements CommandLineRunner {
 
         Customer customer3 = new Customer();
         customer3.setName("Lê Văn C");
-        customer3.setPassword("123");
+        customer3.setPassword(new BCryptPasswordEncoder().encode("123"));
         customer3.setRoles(List.of(ROLE.ROLE_CUSTOMER));
         Calendar cal3 = Calendar.getInstance();
         cal3.set(2024, Calendar.JUNE, 10);

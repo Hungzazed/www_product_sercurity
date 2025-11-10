@@ -2,10 +2,12 @@ package iuh.fit.se.nguyenphihung.controller;
 
 import iuh.fit.se.nguyenphihung.entities.Category;
 import iuh.fit.se.nguyenphihung.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -38,7 +40,10 @@ public class CategoryController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save")
-    public String saveCategory(@ModelAttribute Category category) {
+    public String saveCategory(@Valid @ModelAttribute Category category, BindingResult result) {
+        if (result.hasErrors()) {
+            return "category/form";
+        }
         categoryService.save(category);
         return "redirect:/categories";
     }

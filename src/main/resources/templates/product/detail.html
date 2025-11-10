@@ -108,12 +108,51 @@
 
         <div class="mt-4">
             <h4>Bình luận về sản phẩm</h4>
-            <div th:if="${#lists.isEmpty(comments)}" class="alert alert-info">
-                Chưa có bình luận nào cho sản phẩm này
-            </div>
-            <div th:each="comment : ${comments}" class="card mb-2">
+
+            <!-- Form thêm bình luận (chỉ cho người đã đăng nhập) -->
+            <div sec:authorize="isAuthenticated()" class="card mb-3">
                 <div class="card-body">
-                    <p class="card-text" th:text="${comment.text}"></p>
+                    <h5 class="card-title">Thêm bình luận</h5>
+                    <form th:action="@{/products/detail/{id}/comment(id=${product.id})}" method="post">
+                        <div class="mb-3">
+                            <label for="commentText" class="form-label">Nội dung bình luận:</label>
+                            <textarea class="form-control"
+                                      id="commentText"
+                                      name="commentText"
+                                      rows="3"
+                                      required
+                                      placeholder="Nhập bình luận của bạn..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-comment"></i> Gửi bình luận
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Thông báo yêu cầu đăng nhập (cho người chưa đăng nhập) -->
+            <div sec:authorize="isAnonymous()" class="alert alert-warning">
+                <i class="fas fa-info-circle"></i>
+                Bạn cần <a th:href="@{/login}" class="alert-link">đăng nhập</a>
+                hoặc <a th:href="@{/register}" class="alert-link">đăng ký</a>
+                để có thể bình luận.
+            </div>
+
+            <!-- Danh sách bình luận -->
+            <h5 class="mt-4">Danh sách bình luận (<span th:text="${#lists.size(comments)}"></span>)</h5>
+            <div th:if="${#lists.isEmpty(comments)}" class="alert alert-info">
+                <i class="fas fa-comment-slash"></i> Chưa có bình luận nào cho sản phẩm này. Hãy là người đầu tiên bình luận!
+            </div>
+            <div th:each="comment, iterStat : ${comments}" class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">
+                                <i class="fas fa-user-circle"></i> Người dùng #<span th:text="${iterStat.count}"></span>
+                            </h6>
+                            <p class="card-text mb-1" th:text="${comment.text}"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -122,4 +161,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

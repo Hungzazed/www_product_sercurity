@@ -7,6 +7,7 @@ import iuh.fit.se.nguyenphihung.service.OrderLineService;
 import iuh.fit.se.nguyenphihung.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
+
     @Autowired
     private OrderService orderService;
 
@@ -26,13 +28,22 @@ public class OrderController {
     private OrderLineService orderLineService;
 
     @GetMapping
-    public String listOrders(@RequestParam(required = false) String search, Model model) {
+    public String listOrders(@RequestParam(required = false) String search, Model model, Authentication authentication) {
         List<Order> orders;
-        if (search != null && !search.isEmpty()) {
-            orders = orderService.searchByCustomerName(search);
+
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
+            if (search != null && !search.isEmpty()) {
+                orders = orderService.searchByCustomerName(search);
+            } else {
+                orders = orderService.findAll();
+            }
         } else {
-            orders = orderService.findAll();
+            String username = authentication.getName();
+            Customer customer = customerService.findByUsername(username);
+            orders = orderService.findByCustomerId(customer.getId());
         }
+
         model.addAttribute("orders", orders);
         model.addAttribute("search", search);
         return "order/list";

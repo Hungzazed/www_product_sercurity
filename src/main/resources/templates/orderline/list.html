@@ -27,9 +27,13 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="/orders">Hóa đơn</a>
                     </li>
+                    <li class="nav-item">
+                        <a sec:authorize="hasAnyRole('ADMIN', 'CUSTOMER')" class="nav-link" href="/cart">
+                            Giỏ hàng
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <!-- Nếu đã đăng nhập -->
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                     <span class="navbar-text text-white me-2">
                         Xin chào, <span sec:authentication="name"></span>
@@ -40,8 +44,6 @@
                             <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
                         </form>
                     </li>
-
-                    <!-- Nếu chưa đăng nhập -->
                     <li class="nav-item" sec:authorize="isAnonymous()">
                         <a th:href="@{/login}" class="btn btn-outline-light btn-sm">Đăng nhập</a>
                     </li>

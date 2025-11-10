@@ -33,7 +33,7 @@ public class SercurityConfig {
             Customer customer = customerService.findByUsername(name);
             return new User(
                     customer.getName(),
-                    passwordEncoder().encode(customer.getPassword()),
+                    customer.getPassword(),
                     customer.getRoles()
                             .stream()
                             .map(role -> new SimpleGrantedAuthority(role.toString()))
@@ -48,16 +48,20 @@ public class SercurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/test").permitAll()
                         .requestMatchers("/", "/products", "/products/detail/**").permitAll()
-                        .requestMatchers("/categories", "/categories/detail/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/customers", "/customers/detail/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/orders", "/orders/detail/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .requestMatchers("/products/new", "/products/edit/", "/products/save/").hasRole("ADMIN")
-                        .requestMatchers("/categories/new", "/categories/edit/", "/categories/save/").hasRole("ADMIN")
-                        .requestMatchers("/customers/new", "/customers/edit/", "/customers/save/").hasRole("ADMIN")
-                        .requestMatchers("/orders/new", "/orders/edit/", "/orders/save/").hasRole("ADMIN")
+                        .requestMatchers("/products/detail/*/comment").authenticated()
                         .requestMatchers("/cart/**").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers("/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers(
+                                "/categories/**",
+                                "/customers/**",
+                                "/products/new", "/products/edit/**", "/products/save/**", "/products/delete/**",
+                                "/categories/new", "/categories/edit/**", "/categories/save/**",
+                                "/customers/new", "/customers/edit/**", "/customers/save/**",
+                                "/orders/new", "/orders/edit/**", "/orders/save/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
                         .defaultSuccessUrl("/")
                         .permitAll()

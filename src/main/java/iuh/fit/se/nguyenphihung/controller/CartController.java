@@ -26,7 +26,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/cart")
 public class CartController {
-    
     @Autowired
     private ProductService productService;
     
@@ -35,7 +34,6 @@ public class CartController {
     
     @Autowired
     private CustomerService customerService;
-    
     private static final String CART_SESSION_KEY = "SHOPPING_CART";
 
     private List<CartItem> getCartFromSession(HttpSession session) {
@@ -88,8 +86,7 @@ public class CartController {
         
         return "redirect:/products";
     }
-    
-    // Xem giỏ hàng và thanh toán (chỉ CUSTOMER và ADMIN)
+
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     @GetMapping
     public String viewCart(HttpSession session, Model model) {

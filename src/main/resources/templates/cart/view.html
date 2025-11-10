@@ -8,13 +8,13 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
+    <div class="container-fluid">
         <a class="navbar-brand" href="/">Product Shop</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" href="/products">Sản phẩm</a></li>
                 <li class="nav-item"><a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/categories">Danh mục</a></li>
                 <li class="nav-item"><a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/customers">Khách hàng</a></li>
@@ -35,6 +35,9 @@
                 </li>
                 <li class="nav-item" sec:authorize="isAnonymous()">
                     <a th:href="@{/login}" class="btn btn-outline-light btn-sm">Đăng nhập</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a th:href="@{/register}" class="btn btn-outline-light btn-sm">Đăng ký</a>
                 </li>
             </ul>
         </div>

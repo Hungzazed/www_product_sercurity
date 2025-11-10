@@ -5,10 +5,12 @@ import iuh.fit.se.nguyenphihung.entities.Product;
 import iuh.fit.se.nguyenphihung.service.CategoryService;
 import iuh.fit.se.nguyenphihung.service.CommentService;
 import iuh.fit.se.nguyenphihung.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,13 +66,21 @@ public class ProductController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/save")
-    public String saveProduct(@ModelAttribute Product product, @RequestParam Integer categoryId) {
+    public String saveProduct(@Valid @ModelAttribute Product product,
+                              BindingResult result,
+                              @RequestParam(required = false) Integer categoryId,
+                              Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("categories", categoryService.findAll());
+            return "product/form";
+        }
         Category category = categoryService.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category Id:" + categoryId));
         product.setCategory(category);
         productService.save(product);
         return "redirect:/products";
     }
+
 
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Integer id) {
@@ -86,5 +96,30 @@ public class ProductController {
         model.addAttribute("comments", commentService.findByProductId(id));
         return "product/detail";
     }
-}
 
+    @PostMapping("/detail/{id}/comment")
+    public String addComment(@PathVariable Integer id,
+                            @RequestParam String commentText,
+                            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            if (commentText == null || commentText.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Comment cannot be empty");
+                return "redirect:/products/detail/" + id;
+            }
+
+            Product product = productService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
+
+            iuh.fit.se.nguyenphihung.entities.Comment comment = new iuh.fit.se.nguyenphihung.entities.Comment();
+            comment.setText(commentText);
+            comment.setProduct(product);
+
+            commentService.save(comment);
+            redirectAttributes.addFlashAttribute("success", "Comment added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to add comment: " + e.getMessage());
+        }
+
+        return "redirect:/products/detail/" + id;
+    }
+}

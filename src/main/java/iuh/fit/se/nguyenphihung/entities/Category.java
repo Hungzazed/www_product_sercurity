@@ -1,6 +1,9 @@
 package iuh.fit.se.nguyenphihung.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.LinkedHashSet;
@@ -14,14 +17,16 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString(exclude = "products")
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = "Tên danh mục không được để trống")
+    @Size(max = 20, message = "Tên danh mục không được vượt quá 50 ký tự")
+    @Column(nullable = false, unique = true, length = 20)
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Product> products = new LinkedHashSet<>();
+    private Set<@Valid Product> products = new LinkedHashSet<>();
 }
-

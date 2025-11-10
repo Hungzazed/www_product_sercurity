@@ -15,7 +15,6 @@ public class CartItem implements Serializable {
     private String productName;
     private BigDecimal price;
     private Integer quantity;
-    
     public BigDecimal getSubTotal() {
         return price.multiply(BigDecimal.valueOf(quantity));
     }
