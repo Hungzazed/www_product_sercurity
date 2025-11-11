@@ -1,0 +1,23 @@
+### Test POST /chat (gửi message tới ChatService)
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+  "message": "Cho tôi xem các sản phẩm còn hàng"
+}
+
+### Test POST /chat với message rỗng
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+  "message": ""
+}
+
+### Test POST /chat với message khác
+POST http://localhost:8080/chat
+Content-Type: application/json
+
+{
+  "message": "Bạn có bán laptop không?"
+}

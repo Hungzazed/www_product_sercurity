@@ -33,6 +33,11 @@
                             Giỏ hàng
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/chat">
+                            Chat AI
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <!-- Nếu đã đăng nhập -->
@@ -46,8 +51,6 @@
                             <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
                         </form>
                     </li>
-
-                    <!-- Nếu chưa đăng nhập -->
                     <li class="nav-item" sec:authorize="isAnonymous()">
                         <a th:href="@{/login}" class="btn btn-outline-light btn-sm">Đăng nhập</a>
                     </li>
@@ -71,6 +74,15 @@
                             <h5 class="card-title">Sản phẩm</h5>
                             <p class="card-text">Quản lý danh sách sản phẩm</p>
                             <a href="/products" class="btn btn-primary">Xem danh sách</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Chat</h5>
+                            <p class="card-text">AI tư vấn sản phẩm</p>
+                            <a href="/chat" class="btn btn-primary">Chat với AI</a>
                         </div>
                     </div>
                 </div>

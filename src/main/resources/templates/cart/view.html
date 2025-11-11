@@ -20,6 +20,9 @@
                 <li class="nav-item"><a sec:authorize="hasRole('ADMIN')" class="nav-link" href="/customers">Khách hàng</a></li>
                 <li class="nav-item"><a sec:authorize="hasAnyRole('ADMIN', 'CUSTOMER')" class="nav-link" href="/orders">Hóa đơn</a></li>
                 <li class="nav-item"><a class="nav-link active" href="/cart">Giỏ hàng</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/chat">Chat AI</a>
+                </li>
             </ul>
 
             <ul class="navbar-nav ms-auto">
